@@ -30,7 +30,7 @@ namespace mySnakeClone
                 curEgg.draw();
                 curSnake.draw();
 
-                if (gameState == GameState.GameOver) gameOverScreen.draw(score);
+                gameOverScreen.draw(score);
 
                 // * update part
                 if (gameState == GameState.Playing)
@@ -38,7 +38,7 @@ namespace mySnakeClone
                     curSnake.update();
                     checkEggEaten();
 
-                    if (!curSnake.isAlive) gameState = GameState.GameOver;
+                    if (!curSnake.isAlive) changeGameState(GameState.GameOver);
                 }
                 else if (gameState == GameState.GameOver)
                 {
@@ -46,13 +46,13 @@ namespace mySnakeClone
 
                     if (gameOverScreen.s_requestStartNewGame)
                     {
-                        gameState = GameState.Playing;
+                        changeGameState(GameState.Playing);
                         randomizeEggPos();
                         curSnake = new Snake();
                     }
                 }
 
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_F)) gameState = GameState.GameOver;
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_F)) changeGameState(GameState.GameOver);
 
                 Raylib.EndDrawing();
             }
@@ -83,6 +83,16 @@ namespace mySnakeClone
         {
             curEgg.newRandomPos();
             while (curSnake.isPosInBody(curEgg.position)) curEgg.newRandomPos();
+        }
+        private static void changeGameState(GameState newState)
+        {
+            if (gameState == GameState.GameOver)
+                gameOverScreen.turnOff();
+
+            gameState = newState;
+
+            if (newState == GameState.GameOver)
+                gameOverScreen.turnOn();
         }
     }
 }
