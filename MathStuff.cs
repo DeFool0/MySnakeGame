@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace MathStuff
 {
     public struct Vec2f
@@ -41,6 +43,13 @@ namespace MathStuff
         public Vec2f copy()
         {
             return new Vec2f(x, y);
+        }
+
+        public override bool Equals([NotNullWhen(true)] object obj)
+        {
+            if (!(obj is Vec2f)) return false;
+            Vec2f vObj= (Vec2f)obj;
+            return x == vObj.x && y == vObj.y;
         }
     }
 }

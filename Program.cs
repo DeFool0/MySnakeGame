@@ -10,12 +10,17 @@ namespace mySnakeClone
     {
         private static Snake curSnake = new Snake();
         private static Egg curEgg = new Egg();
+        private static Int64 score = 0;
+        private enum GameState { Playing, GameOver };
+        private static GameState gameState = GameState.Playing;
 
         public static void Main()
         {
             Raylib.InitWindow(Globals.screenWidth, Globals.screenHeight, "Minha cobrona");
 
-            while (!Raylib.WindowShouldClose() && curSnake.isAlive)
+            randomizeEggPos();
+
+            while (!Raylib.WindowShouldClose())
             {
                 Raylib.BeginDrawing();
 
@@ -24,9 +29,22 @@ namespace mySnakeClone
                 curEgg.draw();
                 curSnake.draw();
 
+                if (gameState == GameState.GameOver) drawGameOverScreen();
+
                 // * update part
-                curSnake.update();
-                checkEggEaten(curEgg, curSnake);
+                if (gameState == GameState.Playing)
+                {
+                    curSnake.update();
+                    checkEggEaten();
+
+                    if (!curSnake.isAlive) gameState = GameState.GameOver;
+                }
+                else
+                {
+                    updateGameOverScreen();
+                }
+
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_F)) gameState = GameState.GameOver;
 
                 Raylib.EndDrawing();
             }
@@ -42,14 +60,42 @@ namespace mySnakeClone
                     if (((x / Globals.cellWidth) + (y / Globals.cellHeight)) % 2 == 0)
                         Raylib.DrawRectangle(x, y, Globals.cellWidth, Globals.cellHeight, new Color(239, 237, 189, 255));
         }
-        private static void checkEggEaten(Egg egg, Snake snake)
+        private static void drawGameOverScreen()
         {
-            if (snake.head == egg.position)
-            {
-                snake.grow();
+            int screenMiddleW = Globals.screenWidth / 2;
+            int screenMiddleH = Globals.screenHeight / 2;
 
-                egg.position = new Vec2f(Raylib.GetRandomValue(0, Globals.cellAmount - 1), Raylib.GetRandomValue(0, Globals.cellAmount - 1));
+            Raylib.DrawRectangle(0, 0, Globals.screenWidth, Globals.screenHeight, new Color(0, 0, 0, 150));
+            Raylib.DrawText("GAME OVER", screenMiddleW - Raylib.MeasureText("GAME OVER", 50) / 2, screenMiddleH - screenMiddleH / 2, 50, Color.WHITE);
+            Raylib.DrawText("Score: " + score, screenMiddleW - Raylib.MeasureText("Score: " + score, 40) / 2, screenMiddleH, 40, Color.WHITE);
+            Raylib.DrawText("Press ENTER to restart", screenMiddleW - Raylib.MeasureText("Press ENTER to restart", 40) / 2, screenMiddleH + screenMiddleH / 2, 40, Color.WHITE);
+        }
+        private static void checkEggEaten()
+        {
+            if (curSnake.head == curEgg.position)
+            {
+                curSnake.grow();
+
+                randomizeEggPos();
+
+                score++;
             }
+        }
+        private static void updateGameOverScreen()
+        {
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
+            {
+                gameState = GameState.Playing;
+                curSnake = new Snake();
+                
+                randomizeEggPos();
+            }
+        }
+        private static void randomizeEggPos()
+        {
+            curEgg.position = curSnake.head;
+            while (curSnake.isPosInBody(curEgg.position))
+            curEgg.position = new Vec2f(Raylib.GetRandomValue(0, Globals.cellAmount - 1), Raylib.GetRandomValue(0, Globals.cellAmount - 1));
         }
     }
     public class Snake
@@ -110,11 +156,17 @@ namespace mySnakeClone
             if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT))
                 if (lastDir.x != -1)
                     curDir = new Vec2f(1, 0);
-
         }
         public void grow()
         {
             body.Add(body[body.Count - 1].copy());
+        }
+        public bool isPosInBody(Vec2f pos)
+        {
+            foreach (Vec2f bodyPart in body)
+                if (bodyPart == pos)
+                    return true;
+            return false;
         }
     }
     public class Egg
