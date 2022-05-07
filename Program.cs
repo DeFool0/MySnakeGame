@@ -10,6 +10,7 @@ namespace mySnakeClone
     {
         private static Snake curSnake = new Snake();
         private static Egg curEgg = new Egg();
+        private static GameOverScreen gameOverScreen = new GameOverScreen();
         private static Int64 score = 0;
         private enum GameState { Playing, GameOver };
         private static GameState gameState = GameState.Playing;
@@ -29,7 +30,7 @@ namespace mySnakeClone
                 curEgg.draw();
                 curSnake.draw();
 
-                if (gameState == GameState.GameOver) drawGameOverScreen();
+                if (gameState == GameState.GameOver) gameOverScreen.draw(score);
 
                 // * update part
                 if (gameState == GameState.Playing)
@@ -39,9 +40,16 @@ namespace mySnakeClone
 
                     if (!curSnake.isAlive) gameState = GameState.GameOver;
                 }
-                else
+                else if (gameState == GameState.GameOver)
                 {
-                    updateGameOverScreen();
+                    gameOverScreen.update();
+
+                    if (gameOverScreen.s_requestStartNewGame)
+                    {
+                        gameState = GameState.Playing;
+                        randomizeEggPos();
+                        curSnake = new Snake();
+                    }
                 }
 
                 if (Raylib.IsKeyPressed(KeyboardKey.KEY_F)) gameState = GameState.GameOver;
@@ -60,16 +68,6 @@ namespace mySnakeClone
                     if (((x / Globals.cellWidth) + (y / Globals.cellHeight)) % 2 == 0)
                         Raylib.DrawRectangle(x, y, Globals.cellWidth, Globals.cellHeight, new Color(239, 237, 189, 255));
         }
-        private static void drawGameOverScreen()
-        {
-            int screenMiddleW = Globals.screenWidth / 2;
-            int screenMiddleH = Globals.screenHeight / 2;
-
-            Raylib.DrawRectangle(0, 0, Globals.screenWidth, Globals.screenHeight, new Color(0, 0, 0, 150));
-            Raylib.DrawText("GAME OVER", screenMiddleW - Raylib.MeasureText("GAME OVER", 50) / 2, screenMiddleH - screenMiddleH / 2, 50, Color.WHITE);
-            Raylib.DrawText("Score: " + score, screenMiddleW - Raylib.MeasureText("Score: " + score, 40) / 2, screenMiddleH, 40, Color.WHITE);
-            Raylib.DrawText("Press ENTER to restart", screenMiddleW - Raylib.MeasureText("Press ENTER to restart", 40) / 2, screenMiddleH + screenMiddleH / 2, 40, Color.WHITE);
-        }
         private static void checkEggEaten()
         {
             if (curSnake.head == curEgg.position)
@@ -81,24 +79,10 @@ namespace mySnakeClone
                 score++;
             }
         }
-        private static void updateGameOverScreen()
-        {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
-            {
-                gameState = GameState.Playing;
-                curSnake = new Snake();
-                
-                randomizeEggPos();
-            }
-        }
         private static void randomizeEggPos()
         {
-            curEgg.position = new Vec2f(Raylib.GetRandomValue(0, Globals.cellAmount - 1), Raylib.GetRandomValue(0, Globals.cellAmount - 1));
-            while (curSnake.isPosInBody(curEgg.position))
-            {
-                curEgg.position = new Vec2f(Raylib.GetRandomValue(0, Globals.cellAmount - 1), Raylib.GetRandomValue(0, Globals.cellAmount - 1));
-                Console.WriteLine("Tried to spawn inside snake body.");
-            }
+            curEgg.newRandomPos();
+            while (curSnake.isPosInBody(curEgg.position)) curEgg.newRandomPos();
         }
     }
 }
