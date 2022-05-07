@@ -57,8 +57,9 @@ namespace mySnakeClone
         private System.Collections.Generic.List<Vec2f> body = new System.Collections.Generic.List<Vec2f>();
         public Vec2f head { get { return body[0]; } }
         private Vec2f curDir = new Vec2f(-1, 0);
+        private Vec2f lastDir;
         private double lastMsWalked = 0;
-        public bool isAlive = true;
+        public bool isAlive { get; private set; } = true;
         public Snake()
         {
             body.Add(new Vec2f(15, 15));
@@ -75,6 +76,7 @@ namespace mySnakeClone
             if (curMs - lastMsWalked > 0.200f)
             {
                 lastMsWalked = curMs;
+                lastDir = curDir;
 
                 for (int i = body.Count - 1; i > 0; i--)
                     body[i] = body[i - 1];
@@ -97,16 +99,16 @@ namespace mySnakeClone
             }
 
             if (Raylib.IsKeyDown(KeyboardKey.KEY_UP))
-                if (curDir.y != 1)
+                if (lastDir.y != 1)
                     curDir = new Vec2f(0, -1);
             if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))
-                if (curDir.y != -1)
+                if (lastDir.y != -1)
                     curDir = new Vec2f(0, 1);
             if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))
-                if (curDir.x != 1)
+                if (lastDir.x != 1)
                     curDir = new Vec2f(-1, 0);
             if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT))
-                if (curDir.x != -1)
+                if (lastDir.x != -1)
                     curDir = new Vec2f(1, 0);
 
         }
