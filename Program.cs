@@ -15,13 +15,6 @@ namespace mySnakeClone
         {
             Raylib.InitWindow(Globals.screenWidth, Globals.screenHeight, "Minha cobrona");
 
-            curSnake.grow();
-            curSnake.grow();
-            curSnake.grow();
-            curSnake.grow();
-            curSnake.grow();
-            curSnake.grow();
-
             while (!Raylib.WindowShouldClose() && curSnake.isAlive)
             {
                 Raylib.BeginDrawing();
