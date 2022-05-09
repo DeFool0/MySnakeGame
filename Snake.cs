@@ -1,10 +1,11 @@
 using MathStuff;
 using Raylib_cs;
 
-public class Snake
+public class Snake : GameObject
 {
     private System.Collections.Generic.List<Vec2f> body = new System.Collections.Generic.List<Vec2f>();
     public Vec2f head { get { return body[0]; } }
+    public bool hasHead { get { return body.Count > 0; } }
     private Vec2f curDir = new Vec2f(-1, 0);
     private Vec2f lastDir;
     private double lastMsWalked = 0;
@@ -18,8 +19,10 @@ public class Snake
         foreach (Vec2f bodyPart in body)
             Raylib.DrawRectangle((int)bodyPart.x * Globals.cellWidth, (int)bodyPart.y * Globals.cellHeight, Globals.cellWidth, Globals.cellHeight, Color.GREEN);
     }
-    public void update()
+    public override void update()
     {
+        base.update();
+
         double curMs = Raylib.GetTime();
 
         if (curMs - lastMsWalked > 0.200f)
@@ -60,6 +63,10 @@ public class Snake
             if (lastDir.x != -1)
                 curDir = new Vec2f(1, 0);
     }
+    public void updateDead()
+    {
+        base.update();
+    }
     public void grow()
     {
         body.Add(body[body.Count - 1].copy());
@@ -70,5 +77,12 @@ public class Snake
             if (bodyPart == pos)
                 return true;
         return false;
+    }
+    public void destroyBody()
+    {
+        body.RemoveAt(body.Count - 1);
+
+        if (body.Count != 0)
+            CreateTimer(0.1, () => { destroyBody(); });
     }
 }

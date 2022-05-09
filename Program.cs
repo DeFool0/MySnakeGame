@@ -5,7 +5,6 @@ using MathStuff;
 
 namespace mySnakeClone
 {
-
     public class Program
     {
         private static Snake curSnake = new Snake();
@@ -42,6 +41,13 @@ namespace mySnakeClone
                 }
                 else if (gameState == GameState.GameOver)
                 {
+                    curSnake.updateDead();
+
+                    if (!curSnake.hasHead && !gameOverScreen.isVisible)
+                    {
+                        gameOverScreen.turnOn();
+                    }
+
                     gameOverScreen.update();
 
                     if (gameOverScreen.s_requestStartNewGame)
@@ -92,7 +98,10 @@ namespace mySnakeClone
             gameState = newState;
 
             if (newState == GameState.GameOver)
-                gameOverScreen.turnOn();
+            {
+                curSnake.destroyBody();
+                // gameOverScreen.turnOn();
+            }
         }
     }
 }

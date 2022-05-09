@@ -11,6 +11,7 @@ public class GameOverScreen
     public double initMs = 0;
     private enum States { On, Off }
     private States state = States.Off;
+    public bool isVisible { get { return state == States.On; } }
     public void draw(Int64 score)
     {
         double elapsedMs = 0;
