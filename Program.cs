@@ -2,6 +2,7 @@
 
 using Raylib_cs;
 using MathStuff;
+using System.IO;
 
 namespace mySnakeClone
 {
@@ -11,6 +12,7 @@ namespace mySnakeClone
         private static Egg curEgg = new Egg();
         private static GameOverScreen gameOverScreen = new GameOverScreen();
         private static Int64 score = 0;
+        private static Int64 highscore = 0;
         private enum GameState { Playing, GameOver };
         private static GameState gameState = GameState.Playing;
 
@@ -29,7 +31,7 @@ namespace mySnakeClone
                 curEgg.draw();
                 curSnake.draw();
 
-                gameOverScreen.draw(score);
+                gameOverScreen.draw(score, highscore);
 
                 // * update part
                 if (gameState == GameState.Playing)
@@ -43,9 +45,37 @@ namespace mySnakeClone
                 {
                     curSnake.updateDead();
 
+                    // * wait for the snake to be completely destroyed before showing game over screen
+                    // * it also runs once per death, so it's good for saving the high score
                     if (!curSnake.hasHead && !gameOverScreen.isVisible)
                     {
                         gameOverScreen.turnOn();
+
+                        string filePath = "./highscore.txt";
+
+                        // * I could use Raylib.SaveFileText() but it's unsafe and I'm not sure it's worth it
+
+                        if (File.Exists(filePath))
+                        {
+                            StreamReader reader = new StreamReader(filePath);
+                            Int64 fileHighscore = Int64.Parse(reader.ReadLine());
+                            reader.Close();
+
+                            if (score > fileHighscore)
+                            {
+                                StreamWriter writer = new StreamWriter(filePath);
+                                writer.WriteLine(score);
+                                writer.Close();
+                            }
+
+                            highscore = Math.Max(score, fileHighscore);
+                        }
+                        else
+                        {
+                            StreamWriter writer = new StreamWriter(filePath);
+                            writer.WriteLine(score);
+                            writer.Close();
+                        }
                     }
 
                     gameOverScreen.update();
@@ -55,6 +85,7 @@ namespace mySnakeClone
                         changeGameState(GameState.Playing);
                         randomizeEggPos();
                         curSnake = new Snake();
+                        score = 0;
                     }
                 }
 
