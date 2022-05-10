@@ -49,41 +49,13 @@ namespace mySnakeClone
                     {
                         gameOverScreen.turnOn();
 
-                        string filePath = "./highscore.txt";
-
-                        // * I could use Raylib.SaveFileText() but it's unsafe and I'm not sure it's worth it
-                        if (File.Exists(filePath))
-                        {
-                            StreamReader reader = new StreamReader(filePath);
-                            Int64 fileHighscore = Int64.Parse(reader.ReadLine());
-                            reader.Close();
-
-                            if (score > fileHighscore)
-                            {
-                                StreamWriter writer = new StreamWriter(filePath);
-                                writer.WriteLine(score);
-                                writer.Close();
-                            }
-
-                            highscore = Math.Max(score, fileHighscore);
-                        }
-                        else
-                        {
-                            StreamWriter writer = new StreamWriter(filePath);
-                            writer.WriteLine(score);
-                            writer.Close();
-                        }
+                        handleHighscore();
                     }
 
                     gameOverScreen.update();
 
                     if (gameOverScreen.s_requestStartNewGame)
-                    {
-                        changeGameState(GameState.Playing);
-                        randomizeEggPos();
-                        curSnake = new Snake();
-                        score = 0;
-                    }
+                        restartGame();
                 }
 
                 if (Raylib.IsKeyPressed(KeyboardKey.KEY_F)) changeGameState(GameState.GameOver);
@@ -92,6 +64,14 @@ namespace mySnakeClone
             }
 
             Raylib.CloseWindow();
+        }
+
+        private static void restartGame()
+        {
+            changeGameState(GameState.Playing);
+            randomizeEggPos();
+            curSnake = new Snake();
+            score = 0;
         }
         private static void drawBackGround()
         {
@@ -129,6 +109,33 @@ namespace mySnakeClone
             {
                 curSnake.destroyBody();
                 // gameOverScreen.turnOn();
+            }
+        }
+        private static void handleHighscore()
+        {
+            string filePath = "./highscore.txt";
+
+            // * I could use Raylib.SaveFileText() but it's unsafe and I'm not sure it's worth it
+            if (File.Exists(filePath))
+            {
+                StreamReader reader = new StreamReader(filePath);
+                Int64 fileHighscore = Int64.Parse(reader.ReadLine());
+                reader.Close();
+
+                if (score > fileHighscore)
+                {
+                    StreamWriter writer = new StreamWriter(filePath);
+                    writer.WriteLine(score);
+                    writer.Close();
+                }
+
+                highscore = Math.Max(score, fileHighscore);
+            }
+            else
+            {
+                StreamWriter writer = new StreamWriter(filePath);
+                writer.WriteLine(score);
+                writer.Close();
             }
         }
     }

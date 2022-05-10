@@ -1,5 +1,6 @@
 using MathStuff;
 using Raylib_cs;
+using Canvas;
 
 public class Snake : GameObject
 {
@@ -39,12 +40,16 @@ public class Snake : GameObject
             Vec2f lineStart = new Vec2f((int)body[i].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i].y * Globals.cellHeight + Globals.cellHeight / 2);
             Vec2f lineEnd = new Vec2f((int)body[i + 1].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i + 1].y * Globals.cellHeight + Globals.cellHeight / 2);
             if (isNextBodyPartNear)
-                Raylib.DrawLine((int)lineStart.x, (int)lineStart.y, (int)lineEnd.x, (int)lineEnd.y, Color.BLUE);
+                Pen.DrawLine(lineStart, lineEnd, Color.BLUE);
             else
             {
                 Vec2f invDir = body[i] - body[i + 1];
-                Raylib.DrawLine((int)lineStart.x, (int)lineStart.y, (int)lineStart.x + (int)invDir.x, (int)lineStart.y + (int)invDir.y, Color.BLUE);
-                Raylib.DrawLine((int)lineEnd.x, (int)lineEnd.y, (int)lineEnd.x - (int)invDir.x, (int)lineEnd.y - (int)invDir.y, Color.BLUE);
+                Vec2f offset = invDir * Globals.cellWidth;
+                Pen.DrawLine(lineStart, lineStart + offset, Color.BLUE);
+                Pen.DrawLine(lineEnd, lineEnd + offset.Inverse(), Color.BLUE);
+            
+                invDir = invDir.Inverse();
+
             }
         }
     }
@@ -61,24 +66,7 @@ public class Snake : GameObject
             lastMsWalked = curMs;
             lastDir = curDir;
 
-            for (int i = body.Count - 1; i > 0; i--)
-                body[i] = body[i - 1];
-
-            body[0] += curDir;
-
-            for (int i = 1; i < body.Count; i++)
-                if (body[0] == body[i])
-                    isAlive = false;
-
-            if (body[0].x < 0)
-                body[0] = new Vec2f(Globals.cellAmount - 1, body[0].y);
-            else if (body[0].x > Globals.cellAmount - 1)
-                body[0] = new Vec2f(0, body[0].y);
-
-            if (body[0].y < 0)
-                body[0] = new Vec2f(body[0].x, Globals.cellAmount - 1);
-            else if (body[0].y > Globals.cellAmount - 1)
-                body[0] = new Vec2f(body[0].x, 0);
+            step();
         }
 
         if (Raylib.IsKeyDown(KeyboardKey.KEY_UP))
@@ -97,6 +85,27 @@ public class Snake : GameObject
     public void grow()
     {
         body.Add(body[body.Count - 1].copy());
+    }
+    private void step()
+    {
+        for (int i = body.Count - 1; i > 0; i--)
+            body[i] = body[i - 1];
+
+        body[0] += curDir;
+
+        for (int i = 1; i < body.Count; i++)
+            if (body[0] == body[i])
+                isAlive = false;
+
+        if (body[0].x < 0)
+            body[0] = new Vec2f(Globals.cellAmount - 1, body[0].y);
+        else if (body[0].x > Globals.cellAmount - 1)
+            body[0] = new Vec2f(0, body[0].y);
+
+        if (body[0].y < 0)
+            body[0] = new Vec2f(body[0].x, Globals.cellAmount - 1);
+        else if (body[0].y > Globals.cellAmount - 1)
+            body[0] = new Vec2f(body[0].x, 0);
     }
     public bool isPosInBody(Vec2f pos)
     {

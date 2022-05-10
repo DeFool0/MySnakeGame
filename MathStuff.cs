@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MathStuff
@@ -31,6 +32,14 @@ namespace MathStuff
         {
             return new Vec2f(a.x - b.x, a.y - b.y);
         }
+        public static Vec2f operator *(int a, Vec2f b)
+        {
+            return new Vec2f(a * b.x, a * b.y);
+        }
+        public static Vec2f operator *(Vec2f b, int a)
+        {
+            return new Vec2f(a * b.x, a * b.y);
+        }
         public static bool operator ==(Vec2f a, Vec2f b)
         {
             return a.x == b.x && a.y == b.y;
@@ -55,6 +64,11 @@ namespace MathStuff
             if (!(obj is Vec2f)) return false;
             Vec2f vObj= (Vec2f)obj;
             return x == vObj.x && y == vObj.y;
+        }
+
+        public Vec2f Inverse()
+        {
+            return new Vec2f(-x, -y);
         }
     }
 }
