@@ -17,8 +17,8 @@ public class Snake : GameObject
     }
     public void draw()
     {
-        foreach (Vec2f bodyPart in body)
-            Raylib.DrawRectangle((int)bodyPart.x * Globals.cellWidth, (int)bodyPart.y * Globals.cellHeight, Globals.cellWidth, Globals.cellHeight, Color.GREEN);
+        foreach (Vec2f bodyPartPos in body)
+            Pen.DrawRectangle(bodyPartPos * Globals.cellSize, Globals.cellSize, Color.GREEN);
 
         for (int i = 0; i < body.Count - 1; i++)
         {
@@ -37,8 +37,8 @@ public class Snake : GameObject
                 }
             }
 
-            Vec2f lineStart = new Vec2f((int)body[i].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i].y * Globals.cellHeight + Globals.cellHeight / 2);
-            Vec2f lineEnd = new Vec2f((int)body[i + 1].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i + 1].y * Globals.cellHeight + Globals.cellHeight / 2);
+            Vec2f lineStart = body[i] * Globals.cellSize + Globals.cellSize / 2;
+            Vec2f lineEnd = body[i + 1] * Globals.cellSize + Globals.cellSize / 2;
             if (isNextBodyPartNear)
                 Pen.DrawLine(lineStart, lineEnd, Color.BLUE);
             else

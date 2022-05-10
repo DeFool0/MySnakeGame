@@ -1,12 +1,13 @@
 using MathStuff;
 using Raylib_cs;
+using Canvas;
 
 public class Egg
 {
     public Vec2f position = new Vec2f();
     public void draw()
     {
-        Raylib.DrawRectangle((int)position.x * Globals.cellWidth, (int)position.y * Globals.cellHeight, Globals.cellWidth, Globals.cellHeight, Color.RED);
+        Pen.DrawRectangle(position * Globals.cellWidth, Globals.cellSize, Color.RED);
     }
     public void newRandomPos()
     {

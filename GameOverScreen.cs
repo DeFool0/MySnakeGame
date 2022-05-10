@@ -1,6 +1,8 @@
 using System;
 
 using Raylib_cs;
+using Canvas;
+using MathStuff;
 
 public class GameOverScreen
 {
@@ -32,11 +34,11 @@ public class GameOverScreen
 
         Color fontColor = new Color(255, 255, 255, (int)(255 * elapsedMs));
 
-        Raylib.DrawRectangle(0, 0, Globals.screenWidth, Globals.screenHeight, new Color(0, 0, 0, (int)(150 * elapsedMs)));
-        Raylib.DrawText("GAME OVER", middleW - Raylib.MeasureText("GAME OVER", 50) / 2, middleH - middleH / 2, 50, fontColor);
-        Raylib.DrawText("Score: " + score, middleW - Raylib.MeasureText("Score: " + score, 40) / 2, middleH, 40, fontColor);
-        Raylib.DrawText("Highscore: " + highscore, middleW - Raylib.MeasureText("Highscore: " + highscore, 40) / 2, middleH + middleH / 2 / 2, 30, fontColor);
-        Raylib.DrawText("Press ENTER to restart", middleW - Raylib.MeasureText("Press ENTER to restart", 40) / 2, middleH + middleH / 2, 40, fontColor);
+        Pen.DrawRectangle(Vec2f.ZERO, Globals.screenSize, new Color(0, 0, 0, (int)(150 * elapsedMs)));
+        Pen.DrawText("GAME OVER", new Vec2f(middleW - Raylib.MeasureText("GAME OVER", 50) / 2, middleH  / 2), 50, fontColor);
+        Pen.DrawText("Score: " + score, new Vec2f(middleW - Raylib.MeasureText("Score: " + score, 40) / 2, middleH), 40, fontColor);
+        Pen.DrawText("Highscore: " + highscore, new Vec2f(middleW - Raylib.MeasureText("Highscore: " + highscore, 40) / 2, middleH * 1.25f), 30, fontColor);
+        Pen.DrawText("Press ENTER to restart", new Vec2f(middleW - Raylib.MeasureText("Press ENTER to restart", 40) / 2, middleH * 1.5f), 40, fontColor);
     }
     public void update()
     {

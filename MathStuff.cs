@@ -5,6 +5,8 @@ namespace MathStuff
 {
     public struct Vec2f
     {
+        public static readonly Vec2f ZERO = new Vec2f(0, 0);
+
         public float x;
         public float y;
 
@@ -32,6 +34,10 @@ namespace MathStuff
         {
             return new Vec2f(a.x - b.x, a.y - b.y);
         }
+        public static Vec2f operator *(Vec2f b, Vec2f a)
+        {
+            return new Vec2f(a.x * b.x, a.y * b.y);
+        }
         public static Vec2f operator *(int a, Vec2f b)
         {
             return new Vec2f(a * b.x, a * b.y);
@@ -39,6 +45,10 @@ namespace MathStuff
         public static Vec2f operator *(Vec2f b, int a)
         {
             return new Vec2f(a * b.x, a * b.y);
+        }
+        public static Vec2f operator /(Vec2f a, int b)
+        {
+            return new Vec2f(a.x / b, a.y / b);
         }
         public static bool operator ==(Vec2f a, Vec2f b)
         {
