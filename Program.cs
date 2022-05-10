@@ -54,7 +54,6 @@ namespace mySnakeClone
                         string filePath = "./highscore.txt";
 
                         // * I could use Raylib.SaveFileText() but it's unsafe and I'm not sure it's worth it
-
                         if (File.Exists(filePath))
                         {
                             StreamReader reader = new StreamReader(filePath);
