@@ -18,7 +18,7 @@ public class Snake : GameObject
     {
         foreach (Vec2f bodyPart in body)
             Raylib.DrawRectangle((int)bodyPart.x * Globals.cellWidth, (int)bodyPart.y * Globals.cellHeight, Globals.cellWidth, Globals.cellHeight, Color.GREEN);
-        
+
         for (int i = 0; i < body.Count - 1; i++)
         {
             bool isNextBodyPartNear = false;
@@ -30,7 +30,7 @@ public class Snake : GameObject
                 {
                     if (x == 0 && y == 0)
                         continue;
-                    
+
                     if (body[i + 1].x + x == body[i].x && body[i + 1].y + y == body[i].y)
                         isNextBodyPartNear = true;
                 }
@@ -42,8 +42,6 @@ public class Snake : GameObject
                 Raylib.DrawLine((int)lineStart.x, (int)lineStart.y, (int)lineEnd.x, (int)lineEnd.y, Color.BLUE);
             else
             {
-                // Vec2f dir = body[i + 1] - body[i];
-                // Raylib.DrawLine((int)body[i].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i].y * Globals.cellHeight + Globals.cellHeight / 2, (int)body[i + 1].x * Globals.cellWidth + Globals.cellWidth / 2, (int)body[i + 1].y * Globals.cellHeight + Globals.cellHeight / 2, Color.RED);
                 Vec2f invDir = body[i] - body[i + 1];
                 Raylib.DrawLine((int)lineStart.x, (int)lineStart.y, (int)lineStart.x + (int)invDir.x, (int)lineStart.y + (int)invDir.y, Color.BLUE);
                 Raylib.DrawLine((int)lineEnd.x, (int)lineEnd.y, (int)lineEnd.x - (int)invDir.x, (int)lineEnd.y - (int)invDir.y, Color.BLUE);
@@ -53,6 +51,8 @@ public class Snake : GameObject
     public override void update()
     {
         base.update();
+
+        if (!isAlive || body.Count == 0) return;
 
         double curMs = Raylib.GetTime();
 
@@ -94,10 +94,6 @@ public class Snake : GameObject
             if (lastDir.x != -1)
                 curDir = new Vec2f(1, 0);
     }
-    public void updateDead()
-    {
-        base.update();
-    }
     public void grow()
     {
         body.Add(body[body.Count - 1].copy());
@@ -114,6 +110,6 @@ public class Snake : GameObject
         body.RemoveAt(body.Count - 1);
 
         if (body.Count != 0)
-            CreateTimer(0.1, () => { destroyBody(); });
+            CreateTimer(0.1, destroyBody);
     }
 }

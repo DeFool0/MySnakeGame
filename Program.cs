@@ -32,19 +32,17 @@ namespace mySnakeClone
                 curSnake.draw();
 
                 gameOverScreen.draw(score, highscore);
+                curSnake.update();
 
                 // * update part
                 if (gameState == GameState.Playing)
                 {
-                    curSnake.update();
                     checkEggEaten();
 
                     if (!curSnake.isAlive) changeGameState(GameState.GameOver);
                 }
                 else if (gameState == GameState.GameOver)
                 {
-                    curSnake.updateDead();
-
                     // * wait for the snake to be completely destroyed before showing game over screen
                     // * it also runs once per death, so it's good for saving the high score
                     if (!curSnake.hasHead && !gameOverScreen.isVisible)
